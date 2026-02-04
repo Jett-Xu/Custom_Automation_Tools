@@ -1,57 +1,35 @@
-import "dotenv/config";
-import { ENV } from "./config/env.js";
+// src/index.ts
 import Fastify from "fastify";
-import { TelegramAdapter } from "./platforms/telegram.js";
-import { CopilotProvider } from "./services/providers/copilot.js";
-import { FileStorageProvider } from "./services/storage/fileStorage.js";
-import { createSkillRegistry } from "./agents/index.js";
-import { TaskTracker } from "./services/taskTracker.js";
+import { ENV } from "./config/env.js";
+import { TelegramService } from "./services/messenger/telegram.js";
+import { CopilotAIService } from "./services/ai/copilot.js";
+import { Orchestrator } from "./agents/orchestrator.js";
 
 const fastify = Fastify({ logger: true });
 
-// 1. 初始化
-const aiAgent = new CopilotProvider();
-const storage = new FileStorageProvider("output");
-const skillRegistry = createSkillRegistry(storage);
+// 初始化模組
+const messenger = new TelegramService(ENV.TG_TOKEN);
+const aiBrain = new CopilotAIService();
+const manager = new Orchestrator();
 
-// 2. 核心調度中心
-const orchestrator = async (text: string, chatId: number) => {
-  let currentAction = "";
-  try {
-    const intent = await aiAgent.analyzeIntent(text);
-    currentAction = intent.action;
-    const skill = skillRegistry[currentAction] || skillRegistry["unknown"];
-    const result = await skill(intent.payload);
-    await messenger.sendMessage(chatId, result);
-  } catch (error: any) {
-    const isTimeout =
-      error.message.includes("timeout") || error.message.includes("idle");
-    if (isTimeout && currentAction && TaskTracker.isRunning(currentAction)) {
-      await messenger.sendMessage(
-        chatId,
-        `⏳ 任務 [${currentAction}] 處理中，請稍候查看結果...`
-      );
-      return;
-    }
-    console.error("調度錯誤:", error);
-    await messenger.sendMessage(
-      chatId,
-      `❌ 系統調度失敗: ${error.message || "發生未知錯誤"}`
-    );
-  }
-};
+// 監聽訊息邏輯
+messenger.onMessage(async (chatId, text) => {
+  // 可以在這裡加入一個 loading 提示
+  await messenger.sendMessage(chatId, "⏳ 正在思考並處理您的請求...");
 
-// 3. 啟動平台
-if (!ENV.TELEGRAM_TOKEN) throw new Error("TELEGRAM_TOKEN Missing");
-const messenger = new TelegramAdapter(ENV.TELEGRAM_TOKEN);
-messenger.listen(orchestrator);
+  const result = await manager.dispatch(text, aiBrain);
+  await messenger.sendMessage(chatId, result);
+});
 
 const start = async () => {
   try {
-    await fastify.listen({ port: Number(ENV.PORT), host: "0.0.0.0" });
-    console.log("🚀 AI 代理管理員運行中...");
+    await messenger.init();
+    await fastify.listen({ port: parseInt(ENV.PORT) });
+    console.log(`Agent Server 運行中，Port: ${ENV.PORT}`);
   } catch (err) {
+    fastify.log.error(err);
     process.exit(1);
   }
 };
+
 start();

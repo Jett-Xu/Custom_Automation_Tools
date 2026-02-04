@@ -6,13 +6,11 @@ import path from "path";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 export const ENV = {
   PORT: process.env.PORT || "3000",
-  TELEGRAM_TOKEN: process.env.TELEGRAM_TOKEN || "",
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY || "",
-  COPILOT_API_KEY: process.env.COPILOT_API_KEY || "",
-  AI_PROVIDER: process.env.AI_PROVIDER || "copilot",
+  TG_TOKEN: process.env.TG_TOKEN || "",
+  GITHUB_COPILOT_TOKEN: process.env.GITHUB_COPILOT_TOKEN || "",
 };
 
 // 啟動時自我檢查
-if (!ENV.TELEGRAM_TOKEN) {
-  console.warn("⚠️ 警告：未設定 TELEGRAM_TOKEN，Telegram 模組將無法運作");
+if (!ENV.TG_TOKEN) {
+  console.warn("⚠️ 警告：未設定 TG_TOKEN，Telegram 模組將無法運作");
 }
