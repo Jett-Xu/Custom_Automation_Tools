@@ -1,0 +1,35 @@
+{
+  "name": "custom_automation_tools",
+  "version": "1.0.0",
+  "description": "AI-powered automation tools with Copilot SDK",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://Jett-Xu@github.com/Jett-Xu/Custom_Automation_Tools.git"
+  },
+  "keywords": ["ai", "copilot", "automation"],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jett-Xu/Custom_Automation_Tools/issues"
+  },
+  "homepage": "https://github.com/Jett-Xu/Custom_Automation_Tools#readme",
+  "dependencies": {
+    "@github/copilot-extension-sdk": "^0.1.20",
+    "@octokit/rest": "^21.0.0",
+    "dotenv": "^16.4.7",
+    "fastify": "^5.2.1",
+    "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
