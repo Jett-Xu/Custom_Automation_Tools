@@ -8,6 +8,7 @@ export const ENV = {
   PORT: process.env.PORT || "3000",
   TG_TOKEN: process.env.TG_TOKEN || "",
   GITHUB_COPILOT_TOKEN: process.env.GITHUB_COPILOT_TOKEN || "",
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || "",
 };
 
 // 啟動時自我檢查

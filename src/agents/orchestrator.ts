@@ -10,16 +10,18 @@ export class Orchestrator {
 
     // 2. 構建路由指令
     const skillListString = skills
-      .map((s) => `- [${s.folder}]: ${s.description}`)
+      .map((s) => `- folder_name: ${s.folder} (用途: ${s.description})`)
       .join("\n");
     const routerSystemPrompt = `你是一個專業的任務分配員。
 目前可用技能如下：
 ${skillListString}
 
-請根據使用者的話，回傳對應的 [folder] 名稱。若無匹配請回傳 "none"。
-注意：只回傳資料夾名稱，不要有其他文字。`;
+請根據使用者的話，判斷最適合的技能，然後並且「只」回傳該技能的 folder_name 字串本身（不要加上任何括號或其他符號）。
+若沒有任何匹配的技能，請回傳 "none"。`;
 
-    const selectedFolder = (await ai.ask(userInput, routerSystemPrompt)).trim();
+    let selectedFolder = (await ai.ask(userInput, routerSystemPrompt)).trim();
+    // 移除 AI 可能偷加的括號、引號或反引號，增加容錯率
+    selectedFolder = selectedFolder.replace(/[\[\]\`\'\"]/g, '');
 
     if (selectedFolder === "none") {
       return "目前的技能庫中沒有適合處理此請求的工具。";

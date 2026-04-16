@@ -13,7 +13,11 @@
     "type": "git",
     "url": "git+https://Jett-Xu@github.com/Jett-Xu/Custom_Automation_Tools.git"
   },
-  "keywords": ["ai", "copilot", "automation"],
+  "keywords": [
+    "ai",
+    "copilot",
+    "automation"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -21,7 +25,7 @@
   },
   "homepage": "https://github.com/Jett-Xu/Custom_Automation_Tools#readme",
   "dependencies": {
-    "@github/copilot-extension-sdk": "^0.1.20",
+    "@google/generative-ai": "^0.24.1",
     "@octokit/rest": "^21.0.0",
     "dotenv": "^16.4.7",
     "fastify": "^5.2.1",

@@ -2,14 +2,16 @@
 import Fastify from "fastify";
 import { ENV } from "./config/env.js";
 import { TelegramService } from "./services/messenger/telegram.js";
-import { CopilotAIService } from "./services/ai/copilot.js";
+// import { CopilotAIService } from "./services/ai/copilot.js";
+import { GeminiAIService } from "./services/ai/gemini.js";
 import { Orchestrator } from "./agents/orchestrator.js";
 
 const fastify = Fastify({ logger: true });
 
 // 初始化模組
 const messenger = new TelegramService(ENV.TG_TOKEN);
-const aiBrain = new CopilotAIService();
+// const aiBrain = new CopilotAIService();
+const aiBrain = new GeminiAIService();
 const manager = new Orchestrator();
 
 // 監聽訊息邏輯
