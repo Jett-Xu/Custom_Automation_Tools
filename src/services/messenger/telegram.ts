@@ -1,11 +1,12 @@
 // src/services/messenger/telegram.ts
 import { Telegraf } from "telegraf";
-import { Messenger } from "../../types/index.js";
+import { BotAdapter, MessageContext } from "./botAdapter.js";
 
-export class TelegramService implements Messenger {
+export class TelegramAdapter extends BotAdapter {
   private bot: Telegraf;
 
   constructor(token: string) {
+    super();
     this.bot = new Telegraf(token);
   }
 
@@ -19,13 +20,24 @@ export class TelegramService implements Messenger {
     });
   }
 
-  onMessage(callback: (chatId: string, text: string) => void) {
+  onMessage(callback: (context: MessageContext) => void) {
     this.bot.on("text", (ctx) => {
-      callback(ctx.chat.id.toString(), ctx.message.text);
+      callback({
+        chatId: ctx.chat.id.toString(),
+        text: ctx.message.text,
+        platform: 'telegram',
+        isFrontendDevMode: false
+      });
     });
   }
 
   async sendMessage(chatId: string, text: string) {
     await this.bot.telegram.sendMessage(chatId, text);
+  }
+
+  async sendFiles(chatId: string, files: Buffer[]) {
+    for (const file of files) {
+      await this.bot.telegram.sendDocument(chatId, { source: file, filename: 'file' });
+    }
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "custom_automation_tools",
   "version": "1.0.0",
-  "description": "AI-powered automation tools with Copilot SDK",
+  "description": "AI-powered automation tools with AI",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
@@ -15,7 +15,7 @@
   },
   "keywords": [
     "ai",
-    "copilot",
+    "gemini",
     "automation"
   ],
   "author": "",
@@ -27,6 +27,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@octokit/rest": "^21.0.0",
+    "discord.js": "^14.26.3",
     "dotenv": "^16.4.7",
     "fastify": "^5.2.1",
     "telegraf": "^4.16.3"

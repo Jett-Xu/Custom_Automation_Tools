@@ -1,31 +1,38 @@
 // src/index.ts
 import Fastify from "fastify";
 import { ENV } from "./config/env.js";
-import { TelegramService } from "./services/messenger/telegram.js";
-// import { CopilotAIService } from "./services/ai/copilot.js";
+import { TelegramAdapter } from "./services/messenger/telegram.js";
+import { DiscordAdapter } from "./services/messenger/discord.js";
 import { GeminiAIService } from "./services/ai/gemini.js";
-import { Orchestrator } from "./agents/orchestrator.js";
+import { CoreProcessor } from "./core/CoreProcessor.js";
 
 const fastify = Fastify({ logger: true });
 
-// 初始化模組
-const messenger = new TelegramService(ENV.TG_TOKEN);
-// const aiBrain = new CopilotAIService();
 const aiBrain = new GeminiAIService();
-const manager = new Orchestrator();
-
-// 監聽訊息邏輯
-messenger.onMessage(async (chatId, text) => {
-  // 可以在這裡加入一個 loading 提示
-  await messenger.sendMessage(chatId, "⏳ 正在思考並處理您的請求...");
-
-  const result = await manager.dispatch(text, aiBrain);
-  await messenger.sendMessage(chatId, result);
-});
+const coreProcessor = new CoreProcessor(aiBrain);
 
 const start = async () => {
   try {
-    await messenger.init();
+    if (ENV.TG_TOKEN) {
+      const tgBot = new TelegramAdapter(ENV.TG_TOKEN);
+      tgBot.onMessage(async (context) => {
+        await coreProcessor.handleMessage(context, tgBot);
+      });
+      await tgBot.init();
+    } else {
+      console.warn("⚠️ 警告：未設定 TG_TOKEN，Telegram 模組將無法運作");
+    }
+
+    if (ENV.DC_TOKEN) {
+      const dcBot = new DiscordAdapter(ENV.DC_TOKEN);
+      dcBot.onMessage(async (context) => {
+        await coreProcessor.handleMessage(context, dcBot);
+      });
+      await dcBot.init();
+    } else {
+      console.warn("⚠️ 警告：未設定 DC_TOKEN，Discord 模組將無法運作");
+    }
+
     await fastify.listen({ port: parseInt(ENV.PORT) });
     console.log(`Agent Server 運行中，Port: ${ENV.PORT}`);
   } catch (err) {

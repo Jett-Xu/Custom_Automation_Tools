@@ -7,7 +7,8 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 export const ENV = {
   PORT: process.env.PORT || "3000",
   TG_TOKEN: process.env.TG_TOKEN || "",
-  GITHUB_COPILOT_TOKEN: process.env.GITHUB_COPILOT_TOKEN || "",
+  DC_TOKEN: process.env.DC_TOKEN || "",
+  DC_FRONTEND_DEV_CHANNEL_ID: process.env.DC_FRONTEND_DEV_CHANNEL_ID || "",
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || "",
 };
 
