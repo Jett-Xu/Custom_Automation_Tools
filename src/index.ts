@@ -11,6 +11,15 @@ const fastify = Fastify({ logger: true });
 const aiBrain = new GeminiAIService();
 const coreProcessor = new CoreProcessor(aiBrain);
 
+// 健康檢查端點：確認服務正常運行
+fastify.get("/health", async () => {
+  return {
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+  };
+});
+
 const start = async () => {
   try {
     if (ENV.TG_TOKEN) {
@@ -19,8 +28,6 @@ const start = async () => {
         await coreProcessor.handleMessage(context, tgBot);
       });
       await tgBot.init();
-    } else {
-      console.warn("⚠️ 警告：未設定 TG_TOKEN，Telegram 模組將無法運作");
     }
 
     if (ENV.DC_TOKEN) {
@@ -29,8 +36,6 @@ const start = async () => {
         await coreProcessor.handleMessage(context, dcBot);
       });
       await dcBot.init();
-    } else {
-      console.warn("⚠️ 警告：未設定 DC_TOKEN，Discord 模組將無法運作");
     }
 
     await fastify.listen({ port: parseInt(ENV.PORT) });
